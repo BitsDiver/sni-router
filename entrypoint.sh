@@ -132,17 +132,7 @@ if [ "$STATS_ENABLED" = "true" ]; then
   else
     AUTH_LINE=""
   fi
-  STATS_BLOCK="
-listen stats
-  bind *:${STATS_PORT}
-  stats enable
-  stats uri /stats
-  stats refresh 10s
-  stats show-legends
-  stats show-node
-  stats hide-version
-${AUTH_LINE}
-"
+  STATS_BLOCK="$(printf '\nlisten stats\n  bind *:%s\n  mode http\n  stats enable\n  stats uri /stats\n  stats refresh 10s\n  stats show-legends\n  stats show-node\n  stats hide-version\n%s\n' "${STATS_PORT:-8404}" "${AUTH_LINE}")"
 fi
 
 # --------------------------------------------------------------------------
