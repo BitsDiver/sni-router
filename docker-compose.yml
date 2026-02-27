@@ -1,0 +1,57 @@
+services:
+  sni-router:
+    build: .
+    restart: unless-stopped
+
+    # Expose all ports used by SNI routes and TCP routes.
+    # Add one entry per distinct listen port you define below.
+    ports:
+      - "443:443"        # SNI_LISTEN_PORT — TLS passthrough
+      # - "5432:5432"    # Example: TCP_ROUTE_1 (PostgreSQL)
+      # - "1883:1883"    # Example: TCP_ROUTE_2 (MQTT)
+      # Stats UI — bind to local network interface only (never expose to internet)
+      # - "192.168.1.1:8404:8404"
+
+    environment:
+      # ---------------------------------------------------------------
+      # TLS/SNI routing — all traffic arrives on SNI_LISTEN_PORT (443)
+      # HAProxy reads the TLS ClientHello SNI field and forwards the
+      # raw TCP stream untouched to the matching backend Traefik.
+      # ---------------------------------------------------------------
+      SNI_LISTEN_PORT: "443"
+
+      # One var per rule: hostname:backend_ip:backend_port
+      # Wildcard: *.example.com matches any subdomain.
+      SNI_ROUTE_1: "app1.example.com:192.168.1.10:443"
+      SNI_ROUTE_2: "app2.example.com:192.168.1.20:443"
+      SNI_ROUTE_3: "*.staging.example.com:192.168.1.30:443"
+
+      # Catch-all when no SNI rule matches.
+      SNI_DEFAULT: "192.168.1.10:443"
+
+      # ---------------------------------------------------------------
+      # Plain TCP routing — each rule gets its own listen port.
+      # Format: listen_port:backend_ip:backend_port
+      # No SNI inspection — routed by listen port only.
+      # ---------------------------------------------------------------
+      # TCP_ROUTE_1: "5432:192.168.1.40:5432"
+      # TCP_ROUTE_2: "1883:192.168.1.50:1883"
+
+      # ---------------------------------------------------------------
+      # PROXY protocol v2 — forwards the real client IP to backends
+      # so that upstream services see the real IP instead of the
+      # sni-router address. Backends must be configured to accept it.
+      # ---------------------------------------------------------------
+      PROXY_PROTOCOL: "false"
+
+      # ---------------------------------------------------------------
+      # HAProxy built-in stats web UI — bind to local network only.
+      # Access at http://<local-ip>:8404/stats
+      # ---------------------------------------------------------------
+      STATS_ENABLED: "false"
+      STATS_PORT: "8404"
+      # STATS_PASSWORD: "changeme"   # user is always "admin"
+
+    # Optional: write HAProxy stats socket to a host path for haproxyctl
+    # volumes:
+    #   - /run/haproxy:/run/haproxy
