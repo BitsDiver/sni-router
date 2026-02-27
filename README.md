@@ -15,17 +15,17 @@ Configured entirely via **environment variables**. No config file to maintain.
 ```mermaid
 flowchart LR
     internet["🌐 Internet"]
-    fw["Firewall\n(DNAT)"]
+    fw["Firewall<br/>(DNAT)"]
 
     subgraph router["sni-router container · HAProxy"]
-        tls[":443\nSNI inspection\n(TLS passthrough)"]
-        tcp[":5432\nTCP passthrough"]
+        tls[":443<br/>SNI inspection<br/>(TLS passthrough)"]
+        tcp[":5432<br/>TCP passthrough"]
     end
 
-    m1["Machine 1 :443\n(reverse proxy)"]
-    m2["Machine 2 :443\n(reverse proxy)"]
-    m3["Machine 3 :443\n(reverse proxy)"]
-    m4["Machine 4 :5432\nPostgreSQL"]
+    m1["Machine 1 :443<br/>(reverse proxy)"]
+    m2["Machine 2 :443<br/>(reverse proxy)"]
+    m3["Machine 3 :443<br/>(reverse proxy)"]
+    m4["Machine 4 :5432<br/>PostgreSQL"]
 
     internet --> fw
     fw --> tls
