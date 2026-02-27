@@ -3,9 +3,8 @@ FROM haproxy:3.3-alpine
 # Create config directory (already exists in official image, but explicit)
 RUN mkdir -p /usr/local/etc/haproxy
 
-# Copy and set permissions on the entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Copy entrypoint script with execute permission (BuildKit --chmod)
+COPY --chmod=755 entrypoint.sh /entrypoint.sh
 
 # Default listen port — override via SNI_LISTEN_PORT env var
 EXPOSE 443
