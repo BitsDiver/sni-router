@@ -12,22 +12,33 @@ Configured entirely via **environment variables**. No config file to maintain.
 
 ## Architecture
 
-```
-                              ┌─────────────────────────────────────────┐
-                              │            sni-router container            │
-                              │                  HAProxy                   │
-Internet ──► Firewall ─────► │  :443 ──► SNI: project1.example.com ────►│──► Machine 1 :443 (reverse proxy)
-          (DNAT :443)         │       ──► SNI: project2.example.com ─────►│──► Machine 2 :443 (reverse proxy)
-                              │       ──► SNI: *.staging.example.com ────►│──► Machine 3 :443 (reverse proxy)
-                              │       ──► (default)                  ────►│──► Machine 1 :443
-                              │                                            │
-                              │  :5432 ─────────────────────────────────►│──► Machine 4 :5432 (PostgreSQL)
-                              └─────────────────────────────────────────┘
-                                 TLS stream forwarded byte-for-byte.
-                                 Certificates are managed by each backend.
+```mermaid
+flowchart LR
+    internet["🌐 Internet"]
+    fw["Firewall\n(DNAT)"]
+
+    subgraph router["sni-router container · HAProxy"]
+        tls[":443\nSNI inspection\n(TLS passthrough)"]
+        tcp[":5432\nTCP passthrough"]
+    end
+
+    m1["Machine 1 :443\n(reverse proxy)"]
+    m2["Machine 2 :443\n(reverse proxy)"]
+    m3["Machine 3 :443\n(reverse proxy)"]
+    m4["Machine 4 :5432\nPostgreSQL"]
+
+    internet --> fw
+    fw --> tls
+    fw --> tcp
+
+    tls -->|"SNI: project1.example.com"| m1
+    tls -->|"SNI: project2.example.com"| m2
+    tls -->|"SNI: *.staging.example.com"| m3
+    tls -->|"default"| m1
+    tcp --> m4
 ```
 
-Each backend manages its own TLS termination and certificates (e.g. via its own Traefik, nginx, Caddy…). The sni-router never sees the decrypted content.
+> The TLS stream is forwarded **byte-for-byte** — sni-router never decrypts anything. Each backend manages its own certificates.
 
 If `PROXY_PROTOCOL=true`, HAProxy prepends a **PROXY protocol v2** header to each forwarded connection so backends can recover the **real client IP**.
 
