@@ -1,7 +1,8 @@
 FROM haproxy:3.3-alpine
 
-# Create config directory (already exists in official image, but explicit)
-RUN mkdir -p /usr/local/etc/haproxy
+# Ensure the config directory exists and is writable by the haproxy user
+RUN mkdir -p /usr/local/etc/haproxy \
+    && chown haproxy:haproxy /usr/local/etc/haproxy
 
 # Copy entrypoint script with execute permission (BuildKit --chmod)
 COPY --chmod=755 entrypoint.sh /entrypoint.sh
