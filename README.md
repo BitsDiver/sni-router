@@ -14,14 +14,14 @@ Configured entirely via **environment variables**. No config file to maintain.
 
 ```
                               ┌─────────────────────────────────────────┐
-                              │            sni-router container          │
-                              │                  HAProxy                 │
-Internet ──► OPNsense ──────► │  :443 ──► SNI: project1.example.com ───►│──► Machine 1 :443 (reverse proxy)
-          (DNAT :443)         │       ──► SNI: project2.example.com ───►│──► Machine 2 :443 (reverse proxy)
-                              │       ──► SNI: *.staging.example.com ──►│──► Machine 3 :443 (reverse proxy)
-                              │       ──► (default)                  ──►│──► Machine 1 :443
-                              │                                          │
-                              │  :5432 ────────────────────────────────►│──► Machine 4 :5432 (PostgreSQL)
+                              │            sni-router container            │
+                              │                  HAProxy                   │
+Internet ──► Firewall ─────► │  :443 ──► SNI: project1.example.com ────►│──► Machine 1 :443 (reverse proxy)
+          (DNAT :443)         │       ──► SNI: project2.example.com ─────►│──► Machine 2 :443 (reverse proxy)
+                              │       ──► SNI: *.staging.example.com ────►│──► Machine 3 :443 (reverse proxy)
+                              │       ──► (default)                  ────►│──► Machine 1 :443
+                              │                                            │
+                              │  :5432 ─────────────────────────────────►│──► Machine 4 :5432 (PostgreSQL)
                               └─────────────────────────────────────────┘
                                  TLS stream forwarded byte-for-byte.
                                  Certificates are managed by each backend.
