@@ -1,7 +1,7 @@
 # sni-router
 
-[![Build & Publish](https://github.com/BitsDiver/sni-router/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/BitsDiver/sni-router/actions/workflows/docker-publish.yml)
-[![GitHub Container Registry](https://img.shields.io/badge/ghcr.io-bitsdiver%2Fsni--router-blue?logo=docker)](https://github.com/BitsDiver/sni-router/pkgs/container/sni-router)
+[![Build & Publish](https://github.com/Circle-RD/sni-router/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/Circle-RD/sni-router/actions/workflows/docker-publish.yml)
+[![GitHub Container Registry](https://img.shields.io/badge/ghcr.io-circle-rd%2Fsni--router-blue?logo=docker)](https://github.com/Circle-RD/sni-router/pkgs/container/sni-router)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 TLS/SNI passthrough router running on **HAProxy**. Routes incoming HTTPS (and any TLS) traffic to different backends based on the SNI hostname in the TLS ClientHello — **without decrypting anything**. Also supports plain TCP routing by port.
@@ -48,10 +48,10 @@ If `PROXY_PROTOCOL=true`, HAProxy prepends a **PROXY protocol v2** header to eac
 
 ```bash
 # Pull the image
-docker pull ghcr.io/bitsdiver/sni-router:latest
+docker pull ghcr.io/circle-rd/sni-router:latest
 
 # Or build locally
-git clone https://github.com/BitsDiver/sni-router.git
+git clone https://github.com/Circle-RD/sni-router.git
 cd sni-router
 docker build -t sni-router .
 ```
@@ -165,7 +165,7 @@ Access the dashboard at `http://<local-ip>:<STATS_PORT>/stats`.
 ```yaml
 services:
   sni-router:
-    image: ghcr.io/bitsdiver/sni-router:latest
+    image: ghcr.io/circle-rd/sni-router:latest
     restart: unless-stopped
     ports:
       - "443:443"
